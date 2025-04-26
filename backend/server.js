@@ -13,7 +13,8 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // --- Middleware ---
-app.use(cors());
+const FRONTEND_URL = process.env.FRONTEND_URL || 'https://frontend-end-of-sem.onrender.com';
+app.use(cors({ origin: FRONTEND_URL }));
 app.use(bodyParser.json());
 
 // --- Routes ---
@@ -86,7 +87,7 @@ async function initDb() {
 initDb()
   .then(() => {
     app.listen(PORT, () =>
-      console.log(` Server running on http://localhost:${PORT}`)
+      console.log('🚀 Server running on http://localhost:' + PORT)
     );
   })
   .catch(err => {

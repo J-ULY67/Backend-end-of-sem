@@ -1,13 +1,6 @@
-// backend/db.js
 const { Pool } = require('pg');
-require('dotenv').config();
 
-const pool = new Pool({
-  host:     process.env.PGHOST,
-  user:     process.env.PGUSER,
-  password: process.env.PGPASSWORD,
-  database: process.env.PGDATABASE,
-  port:     process.env.PGPORT,
-});
+const connectionString = process.env.DATABASE_URL || 'postgresql://hostel_thca_user:QICQScPeCxHvMceEMgCbtfPHk626C2hg@dpg-d069d6juibrs73ebrkng-a.oregon-postgres.render.com/hostel_thca';
+const pool = new Pool({ connectionString, ssl: { rejectUnauthorized: false } });
 
 module.exports = pool;
