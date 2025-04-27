@@ -14,15 +14,14 @@ const PORT = process.env.PORT || 5000;
 
 // --- Middleware ---
 
-// ✅ Allow multiple frontends for CORS
+//  Allow multiple frontends to access the API
 const allowedOrigins = [
-  'https://frontend-end-of-sem.onrender.com', 
-  'https://j-uly67.github.io/Frontend-End-of-sem'                  
+  'https://frontend-end-of-sem.onrender.com',  // Render frontend
+  'https://j-uly67.github.io'                  
 ];
 
 app.use(cors({
   origin: function (origin, callback) {
-   
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -40,32 +39,24 @@ app.use('/api/applications', applicationRoutes);
 
 // --- Initialize DB tables ---
 async function initDb() {
-  // 1) create ENUM types (if missing)
+  // 1) Create ENUM types (if missing)
   await pool.query(`
-    DO $$
-    BEGIN
-      IF NOT EXISTS (
-        SELECT 1 FROM pg_type WHERE typname = 'enum_users_role'
-      ) THEN
-        CREATE TYPE enum_users_role AS ENUM ('student','admin');
+    DO $$ BEGIN
+      IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'enum_users_role')
+      THEN CREATE TYPE enum_users_role AS ENUM ('student','admin');
       END IF;
-    END
-    $$;
+    END $$;
   `);
 
   await pool.query(`
-    DO $$
-    BEGIN
-      IF NOT EXISTS (
-        SELECT 1 FROM pg_type WHERE typname = 'enum_applications_status'
-      ) THEN
-        CREATE TYPE enum_applications_status AS ENUM ('pending','accepted','rejected');
+    DO $$ BEGIN
+      IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'enum_applications_status')
+      THEN CREATE TYPE enum_applications_status AS ENUM ('pending','accepted','rejected');
       END IF;
-    END
-    $$;
+    END $$;
   `);
 
-  // 2) users table
+  // 2) Users table
   await pool.query(`
     CREATE TABLE IF NOT EXISTS users (
       id SERIAL PRIMARY KEY,
@@ -77,7 +68,7 @@ async function initDb() {
     );
   `);
 
-  // 3) hostels table
+  // 3) Hostels table
   await pool.query(`
     CREATE TABLE IF NOT EXISTS hostels (
       id SERIAL PRIMARY KEY,
@@ -89,7 +80,7 @@ async function initDb() {
     );
   `);
 
-  // 4) applications table
+  // 4) Applications table
   await pool.query(`
     CREATE TABLE IF NOT EXISTS applications (
       id SERIAL PRIMARY KEY,
@@ -101,7 +92,7 @@ async function initDb() {
   `);
 }
 
-// Start server after DB initialized
+// --- Start server after DB initialized ---
 initDb()
   .then(() => {
     app.listen(PORT, () =>
