@@ -16,7 +16,7 @@ const PORT = process.env.PORT || 5000;
 
 // ✅ Allow multiple frontends for CORS
 const allowedOrigins = [
-  'https://backend-end-of-sem.onrender.com', 
+  'https://frontend-end-of-sem.onrender.com', 
   'https://j-uly67.github.io/Frontend-End-of-sem'                  
 ];
 
