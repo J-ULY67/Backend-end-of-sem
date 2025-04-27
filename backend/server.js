@@ -13,8 +13,24 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // --- Middleware ---
-const FRONTEND_URL = process.env.FRONTEND_URL || 'https://frontend-end-of-sem.onrender.com';
-app.use(cors({ origin: FRONTEND_URL }));
+
+// ✅ Allow multiple frontends for CORS
+const allowedOrigins = [
+  'https://frontend-end-of-sem.onrender.com', 
+  'https://j-uly67.github.io/Frontend-End-of-sem/'                  
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+   
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
+}));
+
 app.use(bodyParser.json());
 
 // --- Routes ---
@@ -24,7 +40,7 @@ app.use('/api/applications', applicationRoutes);
 
 // --- Initialize DB tables ---
 async function initDb() {
-  // 1) create ENUM types (if missing) via DO blocks
+  // 1) create ENUM types (if missing)
   await pool.query(`
     DO $$
     BEGIN
@@ -36,6 +52,7 @@ async function initDb() {
     END
     $$;
   `);
+
   await pool.query(`
     DO $$
     BEGIN
@@ -84,6 +101,7 @@ async function initDb() {
   `);
 }
 
+// Start server after DB initialized
 initDb()
   .then(() => {
     app.listen(PORT, () =>
